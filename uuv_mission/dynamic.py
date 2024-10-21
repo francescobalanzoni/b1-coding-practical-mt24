@@ -87,11 +87,11 @@ class Mission:
         - An instance of the Mission class populated with data from the file.
         """
         file_path = f"../data/{file_name}"
-        data = pd.read_csv(file_path)
+        df = pd.read_csv(file_path)
 
-        reference = data['reference'].values  
-        cave_height = data['cave_height'].values  
-        cave_depth = data['cave_depth'].values  
+        reference = df['reference'].values  
+        cave_height = df['cave_height'].values  
+        cave_depth = df['cave_depth'].values  
 
         return cls(reference, cave_height, cave_depth)
 
@@ -114,7 +114,10 @@ class ClosedLoop:
         for t in range(T):
             positions[t] = self.plant.get_position()
             observation_t = self.plant.get_depth()
+
             # Call your controller here
+            actions[t] = self.controller.get_action(mission.reference[t], observation_t)
+
             self.plant.transition(actions[t], disturbances[t])
 
         return Trajectory(positions)
